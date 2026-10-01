@@ -94,6 +94,20 @@ body{background:radial-gradient(ellipse at 95% 10%,#e2eee7 0,transparent 42%),va
 @media(prefers-reduced-motion:reduce){.profile-photo{animation:none}}
 .card{text-decoration:none;display:block}.card:focus-visible{outline:3px solid #b76b2d;outline-offset:5px}
 .social-links{display:flex;flex-wrap:wrap;gap:12px;padding:0;border:0;justify-content:flex-start;margin-top:24px}.social-links a{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:9px;text-decoration:none;color:var(--accent);background:white;font-size:.85rem;font-weight:600;transition:transform .2s ease,background-color .2s ease}.social-links a:hover{background:#edf3f0;transform:translateY(-2px)}.social-links svg{flex-shrink:0}@media(prefers-reduced-motion:reduce){.social-links a{transition:none}.social-links a:hover{transform:none}}
+
+/* A decorative cat follows the top edge of the contact box. */
+.contact{position:relative;margin-top:78px;overflow:visible}
+.contact-cat-track{position:absolute;left:18px;right:18px;top:-61px;height:60px;pointer-events:none}
+.contact-cat{position:absolute;width:88px;height:60px;left:0;animation:cat-stroll 18s linear infinite}
+.contact-cat svg{display:block;width:88px;height:60px;overflow:visible;animation:cat-bob .55s ease-in-out infinite}
+.cat-leg{transform-box:fill-box;transform-origin:50% 0;animation:cat-step .55s ease-in-out infinite alternate}
+.cat-leg-back{animation-delay:-.275s}
+.cat-tail{transform-box:fill-box;transform-origin:90% 90%;animation:cat-tail-sway 1.1s ease-in-out infinite alternate}
+@keyframes cat-stroll{0%{left:0;transform:scaleX(1)}49.99%{left:calc(100% - 88px);transform:scaleX(1)}50%{left:calc(100% - 88px);transform:scaleX(-1)}99.99%{left:0;transform:scaleX(-1)}100%{left:0;transform:scaleX(1)}}
+@keyframes cat-step{from{transform:rotate(-15deg)}to{transform:rotate(15deg)}}
+@keyframes cat-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.5px)}}
+@keyframes cat-tail-sway{from{transform:rotate(-8deg)}to{transform:rotate(8deg)}}
+@media(prefers-reduced-motion:reduce){.contact-cat,.contact-cat svg,.cat-leg,.cat-tail{animation:none!important}}
 </style>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 </head>
@@ -126,6 +140,11 @@ body{background:radial-gradient(ellipse at 95% 10%,#e2eee7 0,transparent 42%),va
 </div>
 </section>
 <section class="contact" id="contact" aria-labelledby="contact-title">
+<div class="contact-cat-track" aria-hidden="true"><div class="contact-cat"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 88 60" focusable="false">
+<path class="cat-tail" d="M25 34C9 35 7 20 12 11" fill="none" stroke="#526663" stroke-width="7" stroke-linecap="round"/>
+<g fill="#526663"><rect class="cat-leg cat-leg-back" x="28" y="37" width="7" height="21" rx="3"/><rect class="cat-leg" x="38" y="37" width="7" height="21" rx="3"/><rect class="cat-leg" x="56" y="37" width="7" height="21" rx="3"/><rect class="cat-leg cat-leg-back" x="66" y="37" width="7" height="21" rx="3"/><ellipse cx="47" cy="34" rx="25" ry="14"/><path d="M60 20L58 4L68 12L79 5L80 25Z"/><ellipse cx="70" cy="22" rx="13" ry="12"/></g>
+<path d="M61 9L62 16L66 13M77 10L72 14L77 17" fill="#dfa790"/><path d="M65 25Q70 31 77 25" fill="#dce4e2"/><circle cx="66" cy="20" r="2" fill="#e6b46a"/><circle cx="76" cy="20" r="2" fill="#e6b46a"/><path d="M70 24L73 24L71.5 26Z" fill="#b76b72"/><path d="M77 26L86 24M77 28L86 29M65 26L56 24" fill="none" stroke="#192d30" stroke-width=".8"/>
+</svg></div></div>
 <div><p class="eyebrow">Let's connect</p><h2 id="contact-title">Want to say hello?</h2><p>Send me an email. I'd love to hear from you.</p></div>
 <a class="button" href="mailto:jcheragh@uni-mainz.de">Email me ↗</a>
 </section>
