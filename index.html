@@ -84,6 +84,14 @@ body{background:radial-gradient(ellipse at 95% 10%,#e2eee7 0,transparent 42%),va
 
 .profile-photo{display:block;width:160px;height:160px;object-fit:cover;object-position:center;border-radius:50%;margin-bottom:28px;border:5px solid white;box-shadow:0 12px 32px #192d3018}
 @media(max-width:700px){.profile-photo{width:128px;height:128px}}
+
+/* Use the existing right-hand circle for the portrait. */
+.hero{max-width:none;padding-right:340px;min-height:440px}
+.hero::after{display:none}
+.profile-photo{position:absolute;right:0;top:100px;width:280px;height:280px;margin:0;border:5px solid white;box-shadow:0 16px 40px #192d3018;animation:float-orb 10s ease-in-out infinite}
+@media(max-width:900px) and (min-width:701px){.hero{padding-right:250px}.profile-photo{width:210px;height:210px}}
+@media(max-width:700px){.hero{padding-right:0;min-height:0;padding-top:64px}.profile-photo{position:static;width:160px;height:160px;margin:0 0 28px auto}}
+@media(prefers-reduced-motion:reduce){.profile-photo{animation:none}}
 </style>
 </head>
 <body>
@@ -95,7 +103,7 @@ body{background:radial-gradient(ellipse at 95% 10%,#e2eee7 0,transparent 42%),va
 </nav>
 <main id="main">
 <header class="hero" id="home">
-<img class="profile-photo" src="profile.jpg" alt="Jafar Cheraghalizadeh" width="160" height="160" fetchpriority="high">
+<img class="profile-photo" src="profile.jpg" alt="Jafar Cheraghalizadeh" width="280" height="280" fetchpriority="high">
 <p class="eyebrow">My personal corner of the web</p>
 <h1>Hello, I'm Jafar.<br><span>I enjoy creating.</span></h1>
 <p class="lead">Welcome to my first website. A place to share what I'm learning, making, and exploring.</p>
