@@ -60,6 +60,28 @@ section{padding:36px 0}.section-heading{display:block}.section-heading p{margin-
 footer{flex-wrap:wrap}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Decorative motion stays behind the content and never blocks interaction. */
+body{background:radial-gradient(ellipse at 95% 10%,#e2eee7 0,transparent 42%),var(--paper)}
+.hero{position:relative;isolation:isolate}
+.hero::after{content:"";position:absolute;width:clamp(130px,24vw,280px);aspect-ratio:1;right:-8%;top:16%;border-radius:50%;background:radial-gradient(circle at 30% 30%,#deebdf,#accdc1);opacity:.45;z-index:-1;animation:float-orb 10s ease-in-out infinite;pointer-events:none}
+.hero .eyebrow,.hero h1,.hero .lead,.hero .actions{animation:arrive .8s ease-out both}
+.hero h1{animation-delay:.1s}.hero .lead{animation-delay:.2s}.hero .actions{animation-delay:.3s}
+.button,.card,.links a{transition:transform .25s ease,box-shadow .25s ease,background-color .25s ease,color .25s ease}
+.button:hover{transform:translateY(-3px);box-shadow:0 8px 20px #23625322}
+.card{position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#236253,#8dbda8);transform:scaleX(0);transform-origin:left;transition:transform .35s ease}
+.card:hover{transform:translateY(-6px);box-shadow:0 16px 30px #192d3010}
+.card:hover::before{transform:scaleX(1)}
+.contact{background:linear-gradient(120deg,#eaf1ee,#dfece4)}
+@keyframes arrive{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float-orb{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(18px) scale(1.06)}}
+@media(max-width:700px){.hero::after{right:0;top:8%;opacity:.3}}
+@media(prefers-reduced-motion:reduce){
+*,*::before,*::after{animation:none!important;transition:none!important}
+.button:hover,.card:hover{transform:none}
+}
+
 </style>
 </head>
 <body>
