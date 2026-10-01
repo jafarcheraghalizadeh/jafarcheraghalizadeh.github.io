@@ -82,6 +82,8 @@ body{background:radial-gradient(ellipse at 95% 10%,#e2eee7 0,transparent 42%),va
 .button:hover,.card:hover{transform:none}
 }
 
+.profile-photo{display:block;width:160px;height:160px;object-fit:cover;object-position:center;border-radius:50%;margin-bottom:28px;border:5px solid white;box-shadow:0 12px 32px #192d3018}
+@media(max-width:700px){.profile-photo{width:128px;height:128px}}
 </style>
 </head>
 <body>
@@ -93,6 +95,7 @@ body{background:radial-gradient(ellipse at 95% 10%,#e2eee7 0,transparent 42%),va
 </nav>
 <main id="main">
 <header class="hero" id="home">
+<img class="profile-photo" src="profile.jpg" alt="Jafar Cheraghalizadeh" width="160" height="160" fetchpriority="high">
 <p class="eyebrow">My personal corner of the web</p>
 <h1>Hello, I'm Jafar.<br><span>I enjoy creating.</span></h1>
 <p class="lead">Welcome to my first website. A place to share what I'm learning, making, and exploring.</p>
