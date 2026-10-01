@@ -1,125 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Personal Website</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f8fa">
+<title>Jafar Cheraghalizadeh — Personal Website</title>
+<style>
+*{box-sizing:border-box}
+:root{--ink:#192d30;--muted:#53676a;--accent:#236253;--line:#dce4e2;--paper:#f7f8fa}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.7}
+a{color:inherit}
+a:focus-visible{outline:3px solid #b76b2d;outline-offset:5px}
+.wrap{width:min(1080px,calc(100% - 48px));margin:auto}
+.skip{position:absolute;left:24px;top:-100px;background:var(--ink);color:white;padding:10px;z-index:10}
+.skip:focus{top:12px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:28px 0;border-bottom:1px solid var(--line)}
+.brand{font-weight:800;font-size:1.15rem;text-decoration:none;letter-spacing:-.04em}
+.links{display:flex;gap:28px;flex-wrap:wrap}
+.links a{text-decoration:none;font-size:.9rem;color:var(--muted)}
+.links a:hover{color:var(--accent);text-decoration:underline;text-underline-offset:6px}
+.hero{padding:100px 0 88px;max-width:850px}
+.eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:var(--accent);margin:0 0 20px}
+h1{font-size:clamp(2.8rem,7vw,5.5rem);line-height:1.08;letter-spacing:-.065em;margin:0 0 28px;font-weight:750}
+h1 span{color:var(--accent)}
+.lead{font-size:1.2rem;color:var(--muted);max-width:560px;margin:0 0 32px}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:11px 22px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;font-size:.9rem;font-weight:650;border:1px solid var(--accent)}
+.button:hover{background:#184b3f}
+.button.secondary{background:transparent;color:var(--ink);border-color:var(--line)}
+.button.secondary:hover{background:#e9efed}
+section{padding:54px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(1.8rem,4vw,2.4rem);line-height:1.2;letter-spacing:-.04em;margin:0 0 20px}
+.about{display:grid;grid-template-columns:1fr 1.5fr;gap:64px}
+.about p{margin:0;font-size:1.12rem;color:var(--muted);max-width:650px}
+.section-heading{display:flex;justify-content:space-between;gap:20px;align-items:baseline;margin-bottom:24px}
+.section-heading h2{margin:0}
+.section-heading p{color:var(--muted);font-size:.9rem;margin:0}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.card{background:white;padding:28px;border:1px solid var(--line);border-radius:14px}
+.number{display:block;color:var(--accent);font-size:.8rem;font-weight:700;margin-bottom:40px}
+h3{font-size:1.18rem;letter-spacing:-.02em;margin:0 0 10px;line-height:1.4}
+.card p{font-size:.95rem;color:var(--muted);margin:0 0 22px}
+.tag{display:inline-block;font-size:.73rem;font-weight:650;padding:4px 10px;border-radius:20px;background:#edf3f0;color:var(--accent)}
+.contact{margin:30px 0 64px;background:#eaf1ee;padding:44px;border:1px solid #d6e3dd;border-radius:16px;display:flex;justify-content:space-between;align-items:center;gap:28px}
+.contact h2{margin-bottom:10px}
+.contact p{margin:0;color:var(--muted)}
+.contact .button{flex-shrink:0}
+footer{display:flex;justify-content:space-between;gap:20px;padding:24px 0 32px;border-top:1px solid var(--line);color:var(--muted);font-size:.8rem}
+footer p{margin:0}
+@media(max-width:700px){
+.wrap{width:calc(100% - 36px)}
+nav{padding:22px 0;align-items:flex-start}.links{gap:16px}
+.hero{padding:64px 0 60px}.lead{font-size:1.08rem}
+.about{grid-template-columns:1fr;gap:10px}
+section{padding:36px 0}.section-heading{display:block}.section-heading p{margin-top:10px}
+.cards{grid-template-columns:1fr}.number{margin-bottom:22px}
+.contact{padding:28px;display:block;margin-bottom:40px}.contact .button{margin-top:24px}
+footer{flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+/* Decorative motion stays behind the content and never blocks interaction. */
+body{background:radial-gradient(ellipse at 95% 10%,#e2eee7 0,transparent 42%),var(--paper)}
+.hero{position:relative;isolation:isolate}
+.hero::after{content:"";position:absolute;width:clamp(130px,24vw,280px);aspect-ratio:1;right:-8%;top:16%;border-radius:50%;background:radial-gradient(circle at 30% 30%,#deebdf,#accdc1);opacity:.45;z-index:-1;animation:float-orb 10s ease-in-out infinite;pointer-events:none}
+.hero .eyebrow,.hero h1,.hero .lead,.hero .actions{animation:arrive .8s ease-out both}
+.hero h1{animation-delay:.1s}.hero .lead{animation-delay:.2s}.hero .actions{animation-delay:.3s}
+.button,.card,.links a{transition:transform .25s ease,box-shadow .25s ease,background-color .25s ease,color .25s ease}
+.button:hover{transform:translateY(-3px);box-shadow:0 8px 20px #23625322}
+.card{position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#236253,#8dbda8);transform:scaleX(0);transform-origin:left;transition:transform .35s ease}
+.card:hover{transform:translateY(-6px);box-shadow:0 16px 30px #192d3010}
+.card:hover::before{transform:scaleX(1)}
+.contact{background:linear-gradient(120deg,#eaf1ee,#dfece4)}
+@keyframes arrive{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float-orb{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(18px) scale(1.06)}}
+@media(max-width:700px){.hero::after{right:0;top:8%;opacity:.3}}
+@media(prefers-reduced-motion:reduce){
+*,*::before,*::after{animation:none!important;transition:none!important}
+.button:hover,.card:hover{transform:none}
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6fb;
-      color: #253047;
-      line-height: 1.6;
-    }
-
-    header {
-      background: #3548d4;
-      color: white;
-      padding: 60px 20px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 40px;
-    }
-
-    nav {
-      background: #253047;
-      padding: 14px;
-      text-align: center;
-    }
-
-    nav a {
-      color: white;
-      margin: 0 12px;
-      text-decoration: none;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    main {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    section {
-      background: white;
-      padding: 24px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-    }
-
-    h2 {
-      color: #3548d4;
-    }
-
-    .button {
-      display: inline-block;
-      background: #3548d4;
-      color: white;
-      padding: 10px 18px;
-      border-radius: 6px;
-      text-decoration: none;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-    }
-  </style>
+</style>
 </head>
-
 <body>
-  <header>
-    <h1>Hello, I'm Alex 👋</h1>
-    <p>Welcome to my first website!</p>
-  </header>
-
-  <nav aria-label="Main navigation">
-    <a href="#about">About</a>
-    <a href="#projects">Projects</a>
-    <a href="#contact">Contact</a>
-  </nav>
-
-  <main>
-    <section id="about">
-      <h2>About Me</h2>
-      <p>
-        I'm learning web development. I enjoy technology,
-        photography, and creating new things.
-      </p>
-    </section>
-
-    <section id="projects">
-      <h2>My Projects</h2>
-      <ul>
-        <li>My first personal website</li>
-        <li>A travel blog I'm planning</li>
-        <li>A photo gallery I'm building</li>
-      </ul>
-    </section>
-
-    <section id="contact">
-      <h2>Contact Me</h2>
-      <p>Want to say hello? Send me an email.</p>
-      <a class="button" href="mailto:alex@example.com">
-        Email Me
-      </a>
-    </section>
-  </main>
-
-  <footer>
-    <p>© 2026 Alex</p>
-  </footer>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+<nav aria-label="Main navigation">
+<a class="brand" href="#home">Jafar.</a>
+<div class="links"><a href="#about">About</a><a href="#projects">Projects</a><a href="#contact">Contact</a></div>
+</nav>
+<main id="main">
+<header class="hero" id="home">
+<p class="eyebrow">My personal corner of the web</p>
+<h1>Hello, I'm Jafar.<br><span>I enjoy creating.</span></h1>
+<p class="lead">Welcome to my first website. A place to share what I'm learning, making, and exploring.</p>
+<div class="actions"><a class="button" href="#projects">Explore my projects ↗</a><a class="button secondary" href="#about">More about me</a></div>
+</header>
+<section class="about" id="about" aria-labelledby="about-title">
+<div><p class="eyebrow">A little introduction</p><h2 id="about-title">Curiosity comes first.</h2></div>
+<p>I'm learning web development. I enjoy technology, photography, and creating new things.</p>
+</section>
+<section id="projects" aria-labelledby="projects-title">
+<div class="section-heading"><h2 id="projects-title">My projects</h2><p>A few things I'm working on.</p></div>
+<div class="cards">
+<article class="card"><span class="number">01 / WEB</span><h3>My first personal website</h3><p>My starting point for sharing ideas and learning web development.</p><span class="tag">You're here</span></article>
+<article class="card"><span class="number">02 / TRAVEL</span><h3>A travel blog</h3><p>A space I'm planning for travel stories and discoveries.</p><span class="tag">In planning</span></article>
+<article class="card"><span class="number">03 / PHOTOGRAPHY</span><h3>A photo gallery</h3><p>A collection I'm building to share my photography.</p><span class="tag">In progress</span></article>
+</div>
+</section>
+<section class="contact" id="contact" aria-labelledby="contact-title">
+<div><p class="eyebrow">Let's connect</p><h2 id="contact-title">Want to say hello?</h2><p>Send me an email. I'd love to hear from you.</p></div>
+<a class="button" href="mailto:jcheragh@uni-mainz.de">Email me ↗</a>
+</section>
+</main>
+<footer><p>© 2026 Jafar Cheraghalizadeh</p><p>Learning. Exploring. Creating.</p></footer>
+</div>
 </body>
 </html>
