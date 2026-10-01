@@ -3,20 +3,123 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My First Website</title>
+  <title>My Personal Website</title>
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      max-width: 700px;
-      margin: 80px auto;
+      background: #f4f6fb;
+      color: #253047;
+      line-height: 1.6;
+    }
+
+    header {
+      background: #3548d4;
+      color: white;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 40px;
+    }
+
+    nav {
+      background: #253047;
+      padding: 14px;
+      text-align: center;
+    }
+
+    nav a {
+      color: white;
+      margin: 0 12px;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    section {
+      background: white;
+      padding: 24px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+    }
+
+    h2 {
+      color: #3548d4;
+    }
+
+    .button {
+      display: inline-block;
+      background: #3548d4;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
       padding: 20px;
-      background: #f3f6ff;
-      color: #24304a;
     }
   </style>
 </head>
+
 <body>
-  <h1>Hello! Welcome to my website.</h1>
-  <p>I'm learning how to build web pages.</p>
+  <header>
+    <h1>Hello, I'm Alex 👋</h1>
+    <p>Welcome to my first website!</p>
+  </header>
+
+  <nav aria-label="Main navigation">
+    <a href="#about">About</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <main>
+    <section id="about">
+      <h2>About Me</h2>
+      <p>
+        I'm learning web development. I enjoy technology,
+        photography, and creating new things.
+      </p>
+    </section>
+
+    <section id="projects">
+      <h2>My Projects</h2>
+      <ul>
+        <li>My first personal website</li>
+        <li>A travel blog I'm planning</li>
+        <li>A photo gallery I'm building</li>
+      </ul>
+    </section>
+
+    <section id="contact">
+      <h2>Contact Me</h2>
+      <p>Want to say hello? Send me an email.</p>
+      <a class="button" href="mailto:alex@example.com">
+        Email Me
+      </a>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Alex</p>
+  </footer>
 </body>
 </html>
