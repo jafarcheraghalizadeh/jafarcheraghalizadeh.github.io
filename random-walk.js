@@ -29,7 +29,7 @@ function draw(){
  const svg=get("loop-plot"),rows=[...frequencies].sort((a,b)=>a[0]-b[0]);
  const left=90,right=750,top=25,bottom=365;
  const maxX=Math.max(10,Math.pow(10,Math.ceil(Math.log10(Math.max(2,...rows.map(r=>r[0]))))));
- const minY=loops?Math.pow(10,Math.floor(Math.log10(1/loops))):.001;
+ const minY=loops?Math.min(.1,Math.pow(10,Math.floor(Math.log10(1/loops)))):.001;
  const lx=Math.log10(maxX)-Math.log10(2),ly=-Math.log10(minY);
  const X=v=>left+(Math.log10(v)-Math.log10(2))/lx*(right-left);
  const Y=v=>bottom-(Math.log10(v)-Math.log10(minY))/ly*(bottom-top);
