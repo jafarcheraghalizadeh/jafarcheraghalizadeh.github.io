@@ -5,7 +5,7 @@ let temperature = 2.27, running = false, sweeps = 0, lastFrame = 0;
 const canvas = document.getElementById('lattice');
 const ctx = canvas.getContext('2d');
 const get = id => document.getElementById(id);
-let energyHistory = [], energyOrigin = 0, energyStride = 1;
+let energyHistory = [], energyOrigin = 0, energyStride = 1, temperatureChanges = [];
 function neighbors(i) {
   const x = i % size, y = Math.floor(i / size);
   return spins[y * size + (x + 1) % size] + spins[y * size + (x + size - 1) % size]
@@ -52,10 +52,14 @@ function drawEnergy(latest) {
   for(let e=-2;e<=energyMax;e+=.5){const yy=Y(e);marks+='<path d="M'+left+' '+yy+'H'+right+'" stroke="#e5ebe8"/><text x="'+(left-12)+'" y="'+(yy+5)+'" text-anchor="end">'+e.toFixed(1)+'</text>';}
   for(let k=0;k<=4;k++){const n=Math.round(maxN*k/4),xx=X(n);marks+='<path d="M'+xx+' '+top+'V'+bottom+'" stroke="#e5ebe8"/><text x="'+xx+'" y="'+(bottom+24)+'" text-anchor="middle">'+n+'</text>';}
   marks+='<path d="M'+left+' '+top+'V'+bottom+'H'+right+'" fill="none" stroke="#53676a"/>';
+  for (const change of temperatureChanges) {
+    const xx=X(change.n);
+    marks+='<path d="M'+xx+' '+top+'V'+bottom+'" stroke="#b98b50" stroke-dasharray="4 4" opacity=".65"><title>Temperature changed to '+change.temperature.toFixed(2)+' at sweep '+change.n+'</title></path>';
+  }
   const points=energyHistory.slice();if(points[points.length-1]?.n!==latest.n)points.push(latest);
   marks+='<path d="'+points.map((p,i)=>(i?'L':'M')+X(p.n)+' '+Y(p.value)).join(' ')+'" fill="none" stroke="#236253" stroke-width="2"/>';
   marks+='<circle cx="'+X(latest.n)+'" cy="'+Y(latest.value)+'" r="4" fill="#d4a458"/>';
-  marks+='<text x="415" y="393" text-anchor="middle">Monte Carlo sweeps since reset or temperature change</text><text transform="translate(23,180) rotate(-90)" text-anchor="middle">Energy per spin E / (NJ)</text>';
+  marks+='<text x="415" y="393" text-anchor="middle">Monte Carlo sweeps since reset</text><text transform="translate(23,180) rotate(-90)" text-anchor="middle">Energy per spin E / (NJ)</text>';
   get('energy-plot').innerHTML=marks;
   get('energy-plot-note').textContent='T = '+temperature.toFixed(2)+' · '+latest.n+' sweeps · current E/(NJ) = '+latest.value.toFixed(3)+(energyStride>1?' · older samples shown every '+energyStride+' sweeps':' · one sample per sweep');
 }
@@ -63,7 +67,7 @@ function drawEnergy(latest) {
 function reset(mode = 'random') {
   for (let i = 0; i < spins.length; i++) spins[i] = mode === 'ordered' ? 1 : Math.random() < .5 ? -1 : 1;
   sweeps = 0;
-  energyOrigin = 0; energyHistory = []; energyStride = 1;
+  energyOrigin = 0; energyHistory = []; energyStride = 1; temperatureChanges = [];
   render();
 }
 function setTemperature(value) {
@@ -72,7 +76,7 @@ function setTemperature(value) {
   temperature = nextTemperature;
   get('temperature').value = temperature;
   get('temperature-value').textContent = temperature.toFixed(2);
-  if (changed) { energyOrigin = sweeps; energyHistory = []; energyStride = 1; render(); }
+  if (changed) { temperatureChanges.push({n: sweeps - energyOrigin, temperature}); render(); }
 }
 get('temperature').addEventListener('input', event => setTemperature(event.target.value));
 get('toggle').addEventListener('click', () => {
