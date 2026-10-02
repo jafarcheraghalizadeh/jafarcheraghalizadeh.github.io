@@ -2,7 +2,7 @@
 (() => {
 const get=id=>document.getElementById(id),canvas=get("chain-canvas"),ctx=canvas.getContext("2d");
 const transforms=[(x,y)=>[-y,x],(x,y)=>[-x,-y],(x,y)=>[y,-x],(x,y)=>[-x,y],(x,y)=>[x,-y],(x,y)=>[y,x],(x,y)=>[-y,-x]];
-let N=64,chain=[],sweeps=0,attempts=0,accepted=0,running=false,timer=null,samples=[],lastMove=null,busy=false,generation=0;
+let N=64,chain=[],sweeps=0,attempts=0,accepted=0,running=false,timer=null,samples=[],lastMove=null,busy=false,generation=0,shapeSums=new Float64Array(65),shapeCount=0;
 const names=["Rotate 90° counterclockwise","Rotate 180°","Rotate 90° clockwise","Reflect across y axis","Reflect across x axis","Reflect across y = x","Reflect across y = −x"];
 function attempt(k=Math.floor(Math.random()*N), transform=transforms[Math.floor(Math.random()*7)]){
  attempts++;const [px,py]=chain[k],next=chain.slice(0,k+1),occupied=new Set(next.map(p=>p.join(",")));
@@ -10,7 +10,7 @@ function attempt(k=Math.floor(Math.random()*N), transform=transforms[Math.floor(
  for(let i=k+1;i<=N;i++){const [a,b]=transform(chain[i][0]-px,chain[i][1]-py),p=[px+a,py+b],key=p.join(",");if(occupied.has(key))collision=true;occupied.add(key);next.push(p);}
  lastMove={k,pivot:[px,py],proposal:next,accepted:!collision,name:names[transforms.indexOf(transform)]||"Custom symmetry"};
  if(!collision){chain=next;accepted++;}
- if(attempts%N===0){sweeps++;if(sweeps>20){const sample=chain[N].slice();sample.com=chain.reduce((a,p)=>[a[0]+p[0]/chain.length,a[1]+p[1]/chain.length],[0,0]);samples.push(sample);if(samples.length>1200)samples.shift();}}
+ if(attempts%N===0){sweeps++;if(sweeps>20){shapeCount++;for(let bead=1;bead<=N;bead++)shapeSums[bead]+=chain[bead][0]**2+chain[bead][1]**2;const sample=chain[N].slice();sample.com=chain.reduce((a,p)=>[a[0]+p[0]/chain.length,a[1]+p[1]/chain.length],[0,0]);samples.push(sample);if(samples.length>1200)samples.shift();}}
  return !collision;
 }
 function sweep(){
@@ -22,7 +22,7 @@ function sweep(){
 function tick(){if(busy)return;if(get("inspect-pivots").checked){attempt();render();}else sweep();}
 function stop(){running=false;clearInterval(timer);generation++;busy=false;get("chain-toggle").textContent="Start";get("chain-status").textContent="Paused";}
 function start(){running=true;get("chain-toggle").textContent="Pause";get("chain-status").textContent="Running";clearInterval(timer);timer=setInterval(tick,Number(get("sweep-time").value));}
-function reset(){stop();N=Number(get("chain-length").value);chain=Array.from({length:N+1},(_,i)=>[i,0]);sweeps=attempts=accepted=0;samples=[];lastMove=null;render();}
+function reset(){stop();N=Number(get("chain-length").value);chain=Array.from({length:N+1},(_,i)=>[i,0]);sweeps=attempts=accepted=0;samples=[];shapeSums=new Float64Array(N+1);shapeCount=0;lastMove=null;render();}
 function estimate(com=false){
  const data=samples.map(p=>com?p.com:p);
  const n=samples.length;if(!n)return {plateau:0,points:[]};
@@ -31,6 +31,22 @@ function estimate(com=false){
  const points=[];for(let lag=0;lag<=Math.min(128,Math.floor(n/3));lag++){let sum=0;for(let i=0;i<n-lag;i++){const dx=data[i+lag][0]-data[i][0],dy=data[i+lag][1]-data[i][1];sum+=dx*dx+dy*dy;}points.push({lag,value:sum/(n-lag)});}
  return {plateau,points};
 }
+
+function logPlot(id,series,xLabel,yLabel){
+ const all=series.flatMap(s=>s.points).filter(p=>p.x>0&&p.y>0),l=90,r=750,t=30,b=330;
+ let xmin=0,xmax=1,ymin=-1,ymax=1;
+ if(all.length){xmin=Math.floor(Math.log10(Math.min(...all.map(p=>p.x))));xmax=Math.max(xmin+1,Math.ceil(Math.log10(Math.max(...all.map(p=>p.x)))));ymin=Math.floor(Math.log10(Math.min(...all.map(p=>p.y))));ymax=Math.max(ymin+1,Math.ceil(Math.log10(Math.max(...all.map(p=>p.y)))));}
+ const X=x=>l+(Math.log10(x)-xmin)/(xmax-xmin)*(r-l),Y=y=>b-(Math.log10(y)-ymin)/(ymax-ymin)*(b-t);
+ let svg='<rect width="800" height="410" fill="white"/>';
+ const tick=(v)=>'10<tspan baseline-shift="super" font-size="10">'+v+'</tspan>';
+ for(let p=xmin;p<=xmax;p++){const xx=X(10**p);svg+='<path d="M'+xx+' '+t+'V'+b+'" stroke="#e5ebe8"/><text x="'+xx+'" y="355" text-anchor="middle">'+tick(p)+'</text>';}
+ for(let p=ymin;p<=ymax;p++){const yy=Y(10**p);svg+='<path d="M'+l+' '+yy+'H'+r+'" stroke="#e5ebe8"/><text x="'+(l-12)+'" y="'+(yy+5)+'" text-anchor="end">'+tick(p)+'</text>';}
+ svg+='<path d="M'+l+' '+t+'V'+b+'H'+r+'" fill="none" stroke="#53676a"/>';
+ for(const seriesItem of series){const points=seriesItem.points.filter(p=>p.x>0&&p.y>0);if(points.length)svg+='<path d="'+points.map((p,i)=>(i?"L":"M")+X(p.x)+" "+Y(p.y)).join(" ")+'" fill="none" stroke="'+seriesItem.color+'" stroke-width="2.5" stroke-dasharray="'+(seriesItem.dash||"none")+'"/>';}
+ if(!all.length)svg+='<text x="415" y="180" text-anchor="middle">Collect samples after warm-up to see the plot.</text>';
+ svg+='<text x="420" y="395" text-anchor="middle">'+xLabel+'</text><text transform="translate(22,185) rotate(-90)" text-anchor="middle">'+yLabel+'</text>';get(id).innerHTML=svg;
+}
+
 function render(){
  ctx.clearRect(0,0,640,480);ctx.fillStyle="#f7f8fa";ctx.fillRect(0,0,640,480);
  const view=get('inspect-pivots').checked&&lastMove?chain.concat(lastMove.proposal):chain;
@@ -44,15 +60,16 @@ function render(){
  get("chain-sweeps").textContent=sweeps;get("chain-acceptance").textContent=attempts?(100*accepted/attempts).toFixed(1)+"%":"—";
  get("chain-r2").textContent=chain[N][0]**2+chain[N][1]**2;
  get("chain-samples").textContent=samples.length;get("chain-burn").textContent=sweeps<=20?"Warm-up: "+sweeps+" / 20 sweeps":"Collecting endpoint samples";
- const {points,plateau}=estimate();const com=estimate(true);const l=80,r=750,t=30,b=330,maxLag=Math.max(10,points.at(-1)?.lag||0),maxYPlot=Math.max(1,plateau*1.2,com.plateau*1.2,...points.map(p=>p.value*1.1),...com.points.map(p=>p.value*1.1)),cx=v=>l+v/maxLag*(r-l),cy=v=>b-v/maxYPlot*(b-t);
- let svg='<rect width="800" height="410" fill="white"/>';
- for(let k=0;k<=4;k++){const yy=cy(maxYPlot*k/4),xx=cx(maxLag*k/4);svg+='<path d="M'+l+' '+yy+'H'+r+'M'+xx+' '+t+'V'+b+'" stroke="#e5ebe8"/><text x="'+(l-10)+'" y="'+(yy+5)+'" text-anchor="end">'+Math.round(maxYPlot*k/4)+'</text><text x="'+xx+'" y="355" text-anchor="middle">'+Math.round(maxLag*k/4)+'</text>';}
- svg+='<path d="M'+l+' '+t+'V'+b+'H'+r+'" stroke="#53676a" fill="none"/>';
- if(points.length>1){svg+='<path d="'+points.map((p,i)=>(i?"L":"M")+cx(p.lag)+" "+cy(p.value)).join(" ")+'" fill="none" stroke="#236253" stroke-width="2.5"/><path d="M'+l+' '+cy(plateau)+'H'+r+'" stroke="#b98b50" stroke-width="2" stroke-dasharray="6 5"/>';}
- if(com.points.length>1)svg+='<path d="'+com.points.map((p,i)=>(i?'L':'M')+cx(p.lag)+' '+cy(p.value)).join(' ')+'" fill="none" stroke="#ce7958" stroke-width="2.5" stroke-dasharray="8 3"/><path d="M'+l+' '+cy(com.plateau)+'H'+r+'" stroke="#53676a" stroke-dasharray="2 5"/>';
- if(points.length<=1)svg+='<text x="410" y="170" text-anchor="middle">Collect samples after warm-up to see the MSD.</text>';
- svg+='<text x="415" y="395" text-anchor="middle">Lag Δs (Monte Carlo sweeps)</text><text transform="translate(22,185) rotate(-90)" text-anchor="middle">MSD (bond length²)</text>';
- get("chain-msd").innerHTML=svg;get("plateau-value").textContent=plateau.toFixed(2);get("com-plateau").textContent=com.plateau.toFixed(2);
+
+ const endpoint=estimate().points.filter(p=>p.lag>0&&p.value>0).map(p=>({x:p.lag,y:p.value}));
+ const center=estimate(true).points.filter(p=>p.lag>0&&p.value>0).map(p=>({x:p.lag,y:p.value}));
+ logPlot("chain-msd",[{points:endpoint,color:"#236253"},{points:center,color:"#ce7958",dash:"8 3"}],"Lag Δs (Monte Carlo sweeps) · log","MSD (bond length²) · log");
+ const shape=[];if(shapeCount)for(let bead=1;bead<=N;bead++)shape.push({x:bead,y:Math.sqrt(shapeSums[bead]/shapeCount)});
+ const anchor=shape[Math.max(0,Math.floor(shape.length/2)-1)];
+ const theory=anchor?shape.map(p=>({x:p.x,y:anchor.y*(p.x/anchor.x)**.75})):[];
+ logPlot("chain-scaling",[{points:shape,color:"#236253"},{points:theory,color:"#b98b50",dash:"6 5"}],"Contour distance s (bonds) · log","RMS distance from first bead · log");
+ get("scaling-note").textContent=shapeCount+" sampled configurations after warm-up. Gold reference: slope ν = 0.75, normalized to measured RMS at s = "+(anchor?anchor.x:"—")+".";
+
 }
 get("chain-toggle").addEventListener("click",()=>running?stop():start());
 get("chain-step").addEventListener("click",()=>{stop();tick();});
