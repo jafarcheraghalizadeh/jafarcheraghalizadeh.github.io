@@ -128,6 +128,14 @@ body{background:radial-gradient(ellipse at 95% 10%,#e2eee7 0,transparent 42%),va
 #viewer-prev[hidden],#viewer-next[hidden]{display:none}
 @media(prefers-reduced-motion:reduce){.photo-thumbnail{animation:none}.photo-thumbnail img{transition:none}}
 @media(max-width:500px){#travel-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.photo-thumbnail img{height:150px}}
+
+#travel-gallery{display:block;position:relative;padding:0;margin-top:24px}
+.photo-thumbnail{position:absolute;transform:rotate(var(--photo-angle,0deg));animation-name:photo-scatter-float}
+.photo-thumbnail img{width:100%;height:100%;object-fit:cover;border:5px solid white;box-shadow:0 8px 20px #192d3020}
+.photo-thumbnail:hover,.photo-thumbnail:focus-visible{z-index:5}
+@keyframes photo-scatter-float{0%,100%{transform:translateY(0) rotate(var(--photo-angle,0deg))}50%{transform:translateY(-7px) rotate(var(--photo-angle,0deg))}}
+@media(max-width:500px){#travel-gallery{display:block}.photo-thumbnail img{height:100%}}
+@media(prefers-reduced-motion:reduce){.photo-thumbnail{animation:none}}
 </style><link rel="icon" type="image/svg+xml" href="favicon.svg">
 <script src="travel-gallery.js" defer></script></head><body><a class="skip" href="#main">Skip to content</a><div class="wrap">
 <nav aria-label="Main navigation"><a class="brand" href="index.html">Jafar.</a><div class="links"><a href="projects.html">Research &amp; projects</a><a href="travel-photography.html" aria-current="page">Travel & photography</a><a href="training-coding.html">Learning &amp; coding</a></div></nav>
