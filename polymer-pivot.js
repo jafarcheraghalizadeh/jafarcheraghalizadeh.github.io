@@ -61,9 +61,6 @@ function render(){
  get("chain-r2").textContent=chain[N][0]**2+chain[N][1]**2;
  get("chain-samples").textContent=samples.length;get("chain-burn").textContent=sweeps<=20?"Warm-up: "+sweeps+" / 20 sweeps":"Collecting endpoint samples";
 
- const endpoint=estimate().points.filter(p=>p.lag>0&&p.value>0).map(p=>({x:p.lag,y:p.value}));
- const center=estimate(true).points.filter(p=>p.lag>0&&p.value>0).map(p=>({x:p.lag,y:p.value}));
- logPlot("chain-msd",[{points:endpoint,color:"#236253"},{points:center,color:"#ce7958",dash:"8 3"}],"Lag Δs (Monte Carlo sweeps) · log","MSD (bond length²) · log");
  const shape=[];if(shapeCount)for(let bead=1;bead<=N;bead++)shape.push({x:bead,y:Math.sqrt(shapeSums[bead]/shapeCount)});
  const anchor=shape[Math.max(0,Math.floor(shape.length/2)-1)];
  const theory=anchor?shape.map(p=>({x:p.x,y:anchor.y*(p.x/anchor.x)**.75})):[];
