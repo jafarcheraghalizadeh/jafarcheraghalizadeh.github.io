@@ -26,9 +26,29 @@ function draw(){
  get("walk-count").textContent=steps;get("walk-position").textContent="("+x+", "+y+")";get("walk-distance").textContent=Math.hypot(x,y).toFixed(2);
  get("retained").textContent=path.length-1;get("loop-count").textContent=loops;get("erased-steps").textContent=erased;get("last-loop").textContent=lastLength;
  get("mean-loop").textContent=loops?(erased/loops).toFixed(2):"0";get("max-loop").textContent=longest;get("erased-percent").textContent=steps?(100*erased/steps).toFixed(1)+"%":"0%";
- const body=get("loop-table");body.replaceChildren();
- if(!frequencies.size){const tr=document.createElement("tr"),td=document.createElement("td");td.colSpan=3;td.textContent="No loops erased yet.";tr.append(td);body.append(tr);}
- for(const [length,count] of [...frequencies].sort((a,b)=>a[0]-b[0])){const tr=document.createElement("tr");for(const value of [length,count,(100*count/loops).toFixed(1)+"%"]){const td=document.createElement("td");td.textContent=value;tr.append(td);}body.append(tr);}
+ const svg=get("loop-plot"),rows=[...frequencies].sort((a,b)=>a[0]-b[0]);
+ const left=90,right=750,top=25,bottom=365;
+ const maxX=Math.max(10,Math.pow(10,Math.ceil(Math.log10(Math.max(2,...rows.map(r=>r[0]))))));
+ const minY=loops?Math.pow(10,Math.floor(Math.log10(1/loops))):.001;
+ const lx=Math.log10(maxX)-Math.log10(2),ly=-Math.log10(minY);
+ const X=v=>left+(Math.log10(v)-Math.log10(2))/lx*(right-left);
+ const Y=v=>bottom-(Math.log10(v)-Math.log10(minY))/ly*(bottom-top);
+ let marks='<rect x="0" y="0" width="800" height="440" fill="#fff"/>';
+ const xticks=new Set([2,maxX]);
+ for(let p=0;p<=Math.log10(maxX);p++)for(const a of [1,2,5]){const v=a*Math.pow(10,p);if(v>=2&&v<=maxX)xticks.add(v);}
+ for(const v of [...xticks].sort((a,b)=>a-b)){
+  const xx=X(v);marks+='<path d="M'+xx+' '+top+'V'+bottom+'" stroke="#e5ebe8"/><text x="'+xx+'" y="'+(bottom+25)+'" text-anchor="middle">'+v+'</text>';
+ }
+ for(let p=Math.log10(minY);p<=0;p++){
+  const v=Math.pow(10,p),yy=Y(v);marks+='<path d="M'+left+' '+yy+'H'+right+'" stroke="#e5ebe8"/><text x="'+(left-12)+'" y="'+(yy+5)+'" text-anchor="end">10<tspan baseline-shift="super" font-size="10">'+p+'</tspan></text>';
+ }
+ marks+='<path d="M'+left+' '+top+'V'+bottom+'H'+right+'" fill="none" stroke="#53676a"/>';
+ for(const [length,count] of rows){const probability=count/loops;marks+='<circle cx="'+X(length)+'" cy="'+Y(probability)+'" r="4.5" fill="#236253" stroke="#fff" stroke-width="1"><title>Length '+length+': '+count+' events; P = '+probability.toPrecision(4)+'</title></circle>';}
+ marks+='<text x="'+((left+right)/2)+'" y="425" text-anchor="middle">Loop length ℓ (edges) · log scale</text><text transform="translate(22,195) rotate(-90)" text-anchor="middle">P(ℓ) · log scale</text>';
+ if(!rows.length)marks+='<text x="420" y="190" text-anchor="middle">Run the walk to collect erased loops.</text>';
+ svg.innerHTML=marks;
+ get("loop-plot-note").textContent=loops+" erasure events · "+rows.length+" observed loop lengths · P(ℓ) = count at ℓ / total erasure events";
+
 }
 get("walk-toggle").addEventListener("click",()=>{if(running)pause();else if(steps<20000){running=true;get("walk-toggle").textContent="Pause";get("walk-status").textContent="Running";}});
 get("walk-step").addEventListener("click",()=>{pause();step();draw();});
