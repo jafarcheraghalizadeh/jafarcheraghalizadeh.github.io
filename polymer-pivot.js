@@ -55,7 +55,6 @@ function render(){
  ctx.strokeStyle="#236253";ctx.lineWidth=2;ctx.beginPath();chain.forEach(([x,y],i)=>i?ctx.lineTo(X(x),Y(y)):ctx.moveTo(X(x),Y(y)));ctx.stroke();
 
  if(get("inspect-pivots").checked&&lastMove){ctx.strokeStyle="#b98b50";ctx.lineWidth=1.5;ctx.setLineDash([5,4]);ctx.beginPath();lastMove.proposal.slice(lastMove.k).forEach(([x,y],i)=>i?ctx.lineTo(X(x),Y(y)):ctx.moveTo(X(x),Y(y)));ctx.stroke();ctx.setLineDash([]);const [x,y]=lastMove.pivot;ctx.strokeStyle="#ce7958";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(X(x)-6,Y(y));ctx.lineTo(X(x)+6,Y(y));ctx.moveTo(X(x),Y(y)-6);ctx.lineTo(X(x),Y(y)+6);ctx.stroke();}
- get("pivot-description").textContent=lastMove?"Pivot bead "+lastMove.k+" · "+lastMove.name+" · "+(lastMove.accepted?"Accepted":"Rejected: overlap"):"No pivot attempted yet.";
 
  get("chain-sweeps").textContent=sweeps;get("chain-acceptance").textContent=attempts?(100*accepted/attempts).toFixed(1)+"%":"—";
  get("chain-r2").textContent=chain[N][0]**2+chain[N][1]**2;
