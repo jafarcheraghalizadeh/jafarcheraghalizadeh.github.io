@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Random walk lab — Jafar Cheraghalizadeh</title><link rel="icon" href="favicon.svg" type="image/svg+xml"><style>
+*{box-sizing:border-box}
+:root{--ink:#192d30;--muted:#53676a;--accent:#236253;--line:#dce4e2;--paper:#f7f8fa}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.7}
+a{color:inherit}
+a:focus-visible{outline:3px solid #b76b2d;outline-offset:5px}
+.wrap{width:min(1080px,calc(100% - 48px));margin:auto}
+.skip{position:absolute;left:24px;top:-100px;background:var(--ink);color:white;padding:10px;z-index:10}
+.skip:focus{top:12px}
+nav{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:28px 0;border-bottom:1px solid var(--line)}
+.brand{font-weight:800;font-size:1.15rem;text-decoration:none;letter-spacing:-.04em}
+.links{display:flex;gap:28px;flex-wrap:wrap}
+.links a{text-decoration:none;font-size:.9rem;color:var(--muted)}
+.links a:hover{color:var(--accent);text-decoration:underline;text-underline-offset:6px}
+.hero{padding:100px 0 88px;max-width:850px}
+.eyebrow{font-size:.75rem;text-transform:uppercase;letter-spacing:.16em;font-weight:700;color:var(--accent);margin:0 0 20px}
+h1{font-size:clamp(2.8rem,7vw,5.5rem);line-height:1.08;letter-spacing:-.065em;margin:0 0 28px;font-weight:750}
+h1 span{color:var(--accent)}
+.lead{font-size:1.2rem;color:var(--muted);max-width:560px;margin:0 0 32px}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:11px 22px;border-radius:8px;background:var(--accent);color:white;text-decoration:none;font-size:.9rem;font-weight:650;border:1px solid var(--accent)}
+.button:hover{background:#184b3f}
+.button.secondary{background:transparent;color:var(--ink);border-color:var(--line)}
+.button.secondary:hover{background:#e9efed}
+section{padding:54px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(1.8rem,4vw,2.4rem);line-height:1.2;letter-spacing:-.04em;margin:0 0 20px}
+.about{display:grid;grid-template-columns:1fr 1.5fr;gap:64px}
+.about p{margin:0;font-size:1.12rem;color:var(--muted);max-width:650px}
+.section-heading{display:flex;justify-content:space-between;gap:20px;align-items:baseline;margin-bottom:24px}
+.section-heading h2{margin:0}
+.section-heading p{color:var(--muted);font-size:.9rem;margin:0}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.card{background:white;padding:28px;border:1px solid var(--line);border-radius:14px}
+.number{display:block;color:var(--accent);font-size:.8rem;font-weight:700;margin-bottom:40px}
+h3{font-size:1.18rem;letter-spacing:-.02em;margin:0 0 10px;line-height:1.4}
+.card p{font-size:.95rem;color:var(--muted);margin:0 0 22px}
+.tag{display:inline-block;font-size:.73rem;font-weight:650;padding:4px 10px;border-radius:20px;background:#edf3f0;color:var(--accent)}
+.contact{margin:30px 0 64px;background:#eaf1ee;padding:44px;border:1px solid #d6e3dd;border-radius:16px;display:flex;justify-content:space-between;align-items:center;gap:28px}
+.contact h2{margin-bottom:10px}
+.contact p{margin:0;color:var(--muted)}
+.contact .button{flex-shrink:0}
+footer{display:flex;justify-content:space-between;gap:20px;padding:24px 0 32px;border-top:1px solid var(--line);color:var(--muted);font-size:.8rem}
+footer p{margin:0}
+@media(max-width:700px){
+.wrap{width:calc(100% - 36px)}
+nav{padding:22px 0;align-items:flex-start}.links{gap:16px}
+.hero{padding:64px 0 60px}.lead{font-size:1.08rem}
+.about{grid-template-columns:1fr;gap:10px}
+section{padding:36px 0}.section-heading{display:block}.section-heading p{margin-top:10px}
+.cards{grid-template-columns:1fr}.number{margin-bottom:22px}
+.contact{padding:28px;display:block;margin-bottom:40px}.contact .button{margin-top:24px}
+footer{flex-wrap:wrap}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* Decorative motion stays behind the content and never blocks interaction. */
+body{background:radial-gradient(ellipse at 95% 10%,#e2eee7 0,transparent 42%),var(--paper)}
+.hero{position:relative;isolation:isolate}
+.hero::after{content:"";position:absolute;width:clamp(130px,24vw,280px);aspect-ratio:1;right:-8%;top:16%;border-radius:50%;background:radial-gradient(circle at 30% 30%,#deebdf,#accdc1);opacity:.45;z-index:-1;animation:float-orb 10s ease-in-out infinite;pointer-events:none}
+.hero .eyebrow,.hero h1,.hero .lead,.hero .actions{animation:arrive .8s ease-out both}
+.hero h1{animation-delay:.1s}.hero .lead{animation-delay:.2s}.hero .actions{animation-delay:.3s}
+.button,.card,.links a{transition:transform .25s ease,box-shadow .25s ease,background-color .25s ease,color .25s ease}
+.button:hover{transform:translateY(-3px);box-shadow:0 8px 20px #23625322}
+.card{position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#236253,#8dbda8);transform:scaleX(0);transform-origin:left;transition:transform .35s ease}
+.card:hover{transform:translateY(-6px);box-shadow:0 16px 30px #192d3010}
+.card:hover::before{transform:scaleX(1)}
+.contact{background:linear-gradient(120deg,#eaf1ee,#dfece4)}
+@keyframes arrive{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float-orb{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(18px) scale(1.06)}}
+@media(max-width:700px){.hero::after{right:0;top:8%;opacity:.3}}
+@media(prefers-reduced-motion:reduce){
+*,*::before,*::after{animation:none!important;transition:none!important}
+.button:hover,.card:hover{transform:none}
+}
+
+.profile-photo{display:block;width:160px;height:160px;object-fit:cover;object-position:center;border-radius:50%;margin-bottom:28px;border:5px solid white;box-shadow:0 12px 32px #192d3018}
+@media(max-width:700px){.profile-photo{width:128px;height:128px}}
+
+/* Use the existing right-hand circle for the portrait. */
+.hero{max-width:none;padding-right:340px;min-height:440px}
+.hero::after{display:none}
+.profile-photo{position:absolute;right:0;top:100px;width:280px;height:280px;margin:0;border:5px solid white;box-shadow:0 16px 40px #192d3018;animation:float-orb 10s ease-in-out infinite}
+@media(max-width:900px) and (min-width:701px){.hero{padding-right:250px}.profile-photo{width:210px;height:210px}}
+@media(max-width:700px){.hero{padding-right:0;min-height:0;padding-top:64px}.profile-photo{position:static;width:160px;height:160px;margin:0 0 28px auto}}
+@media(prefers-reduced-motion:reduce){.profile-photo{animation:none}}
+
+.page-intro{padding:72px 0 48px;max-width:850px}.page-intro h1{font-size:clamp(2.6rem,7vw,4.8rem)}.page-content{margin-bottom:64px}.page-content p{color:var(--muted)}.links a[aria-current="page"]{color:var(--accent);font-weight:700}@media(max-width:700px){nav{flex-wrap:wrap}.page-intro{padding:48px 0 32px}}
+.social-links{display:flex;flex-wrap:wrap;gap:12px;padding:0;border:0;justify-content:flex-start;margin-top:24px}.social-links a{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:9px;text-decoration:none;color:var(--accent);background:white;font-size:.85rem;font-weight:600;transition:transform .2s ease,background-color .2s ease}.social-links a:hover{background:#edf3f0;transform:translateY(-2px)}.social-links svg{flex-shrink:0}@media(prefers-reduced-motion:reduce){.social-links a{transition:none}.social-links a:hover{transform:none}}
+
+.learning-intro-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:24px;align-items:center;padding:72px 0 48px}
+.learning-intro-layout .page-intro{padding:0;max-width:none;min-width:0}
+.learning-intro-layout .page-intro h1{font-size:clamp(2.6rem,5.4vw,4.8rem)}
+.learning-animation{display:block;min-width:0;border-radius:50%;animation:arrive 1.2s ease-out both;text-decoration:none}
+.learning-animation canvas{display:block;width:100%;height:auto}
+.learning-animation:focus-visible{outline:3px solid #b76b2d;outline-offset:4px}
+@media(max-width:800px){.learning-intro-layout{grid-template-columns:1fr;padding:48px 0 32px;gap:12px}.learning-animation{width:min(100%,380px);margin:auto}}
+@media(prefers-reduced-motion:reduce){.learning-animation{animation:none}}
+
+.learning-visual{min-width:0}
+.python-typing{margin:0 auto 16px;width:max-content;max-width:100%;padding:0;background:transparent;color:var(--ink);font:clamp(.85rem,1.5vw,1rem)/1.9 ui-monospace,SFMono-Regular,Consolas,monospace;overflow:hidden}
+.python-line{display:block;white-space:pre;overflow:hidden;box-sizing:content-box}
+.python-keyword{color:var(--accent);font-weight:600}
+.python-first{width:0;animation:python-first 9s steps(19,end) infinite}
+.python-second{width:0;border-right:2px solid var(--accent);animation:python-second 9s steps(12,end) infinite,python-cursor .8s step-end infinite}
+@keyframes python-first{0%,8%{width:0}35%,90%{width:19ch}100%{width:0}}
+@keyframes python-second{0%,37%{width:0;opacity:0}38%{width:0;opacity:1}57%,90%{width:12ch;opacity:1}100%{width:0;opacity:0}}
+@keyframes python-cursor{50%{border-color:transparent}}
+@media(prefers-reduced-motion:reduce){.python-first{width:19ch;animation:none}.python-second{width:12ch;opacity:1;border:0;animation:none}}
+
+.walk-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(250px,1fr);gap:24px}.walk-panel{background:white;border:1px solid var(--line);border-radius:14px;padding:24px}#walk-canvas{display:block;width:100%;height:auto}.walk-controls{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}button{font:inherit;cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #b76b2d;outline-offset:4px}input[type=range]{width:100%;accent-color:var(--accent)}.walk-metrics dt{font-size:.85rem;color:var(--muted)}.walk-metrics dd{margin:0 0 14px;font-size:1.3rem;font-weight:700}pre{background:#192d30;color:#edf3f0;padding:22px;border-radius:10px;overflow:auto} @media(max-width:800px){.walk-layout{grid-template-columns:1fr}}
+</style><script src="random-walk.js" defer></script></head><body><a class="skip" href="#main">Skip to content</a><div class="wrap"><nav aria-label="Main navigation"><a class="brand" href="index.html">Jafar.</a><div class="links"><a href="projects.html">Research &amp; projects</a><a href="travel-photography.html">Travel &amp; photography</a><a href="training-coding.html">Learning &amp; coding</a></div></nav><main id="main"><header class="page-intro"><p class="eyebrow">INTERACTIVE PHYSICS / 02</p><h1>The random <span>walk lab.</span></h1><p class="lead">Four possible directions. One unpredictable path. Explore how random steps build diffusion.</p><a class="button secondary" href="training-coding.html">← Learning &amp; coding</a></header><section><h2>Follow the walker</h2><div class="walk-layout"><div class="walk-panel"><canvas id="walk-canvas" width="640" height="640" role="img" aria-label="Two-dimensional random walk trajectory. Gold marks the origin; green marks the current position."></canvas><p>Gold: starting point · Green: current position</p></div><div class="walk-panel"><label for="walk-speed"><strong>Speed: <output id="walk-speed-value">30</output> steps/second</strong></label><input id="walk-speed" type="range" min="1" max="120" value="30"><div class="walk-controls"><button class="button" id="walk-toggle">Start</button><button class="button secondary" id="walk-step">One step</button><button class="button secondary" id="walk-reset">Reset</button></div><p id="walk-status" role="status">Paused</p><dl class="walk-metrics"><dt>Steps N</dt><dd id="walk-count">0</dd><dt>Position (x, y)</dt><dd id="walk-position">(0, 0)</dd><dt>Distance from start r</dt><dd id="walk-distance">0</dd><dt>Squared distance r²</dt><dd id="walk-squared">0</dd><dt>Ensemble RMS prediction √N</dt><dd id="walk-rms">0</dd></dl><p>The view zooms out to keep the full path visible. Each step has unit length; the walker has no boundaries. A run pauses after 20,000 steps.</p><noscript>Enable JavaScript to run the demo.</noscript></div></div></section><section><h2>Why does this matter?</h2><p>At each step, the walker chooses left, right, up, or down with equal probability. Steps are independent. This simple model helps explain diffusion, stochastic motion, and polymer chain configurations.</p><p>For many independent walks of N unit steps, the average squared distance is ⟨r²⟩ = N. The root-mean-square distance is therefore √N. A single trajectory fluctuates and need not match this average; it can also return toward its starting point.</p><h3>Try an experiment</h3><ol><li>Pause after 100 steps and note r².</li><li>Reset and repeat several times. Compare the average of r² with 100.</li><li>Repeat at 400 steps. The predicted RMS distance doubles, from 10 to 20.</li></ol></section><section><h2>Code a walk in Python</h2><pre><code>import random
+
+x, y = 0, 0
+directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
+for step in range(1000):
+    dx, dy = random.choice(directions)
+    x += dx
+    y += dy
+
+print("Position:", x, y)
+print("Squared distance:", x*x + y*y)</code></pre><p><a href="random-walk.js">View the JavaScript used by this demo</a></p></section></main><footer><p>© 2026 Jafar Cheraghalizadeh</p><a href="training-coding.html">Back to learning &amp; coding</a></footer></div></body></html>
