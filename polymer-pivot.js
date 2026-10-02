@@ -42,7 +42,7 @@ function logPlot(id,series,xLabel,yLabel){
  for(let p=xmin;p<=xmax;p++){const xx=X(10**p);svg+='<path d="M'+xx+' '+t+'V'+b+'" stroke="#e5ebe8"/><text x="'+xx+'" y="355" text-anchor="middle">'+tick(p)+'</text>';}
  for(let p=ymin;p<=ymax;p++){const yy=Y(10**p);svg+='<path d="M'+l+' '+yy+'H'+r+'" stroke="#e5ebe8"/><text x="'+(l-12)+'" y="'+(yy+5)+'" text-anchor="end">'+tick(p)+'</text>';}
  svg+='<path d="M'+l+' '+t+'V'+b+'H'+r+'" fill="none" stroke="#53676a"/>';
- for(const seriesItem of series){const points=seriesItem.points.filter(p=>p.x>0&&p.y>0);if(points.length)svg+='<path d="'+points.map((p,i)=>(i?"L":"M")+X(p.x)+" "+Y(p.y)).join(" ")+'" fill="none" stroke="'+seriesItem.color+'" stroke-width="2.5" stroke-dasharray="'+(seriesItem.dash||"none")+'"/>';}
+ for(const seriesItem of series){const points=seriesItem.points.filter(p=>p.x>0&&p.y>0);if(!seriesItem.dash){for(const p of points)svg+='<circle cx="'+X(p.x)+'" cy="'+Y(p.y)+'" r="2.5" fill="'+seriesItem.color+'"><title>s = '+p.x+'; RMS = '+p.y.toFixed(3)+'</title></circle>';}else if(points.length)svg+='<path d="'+points.map((p,i)=>(i?"L":"M")+X(p.x)+" "+Y(p.y)).join(" ")+'" fill="none" stroke="'+seriesItem.color+'" stroke-width="2.5" stroke-dasharray="'+(seriesItem.dash||"none")+'"/>';}
  if(!all.length)svg+='<text x="415" y="180" text-anchor="middle">Collect samples after warm-up to see the plot.</text>';
  svg+='<text x="420" y="395" text-anchor="middle">'+xLabel+'</text><text transform="translate(22,185) rotate(-90)" text-anchor="middle">'+yLabel+'</text>';get(id).innerHTML=svg;
 }
