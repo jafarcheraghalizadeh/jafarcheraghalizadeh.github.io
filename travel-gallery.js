@@ -19,9 +19,20 @@
  if(!photos.length)return;
  photos=photos.filter((p,i,a)=>a.findIndex(q=>q.url===p.url)===i);
  grid.replaceChildren();
+ photos.sort(()=>Math.random()-.5);
  photos.forEach((photo,i)=>{
-  const button=document.createElement("button");button.type="button";button.className="photo-thumbnail";button.style.setProperty("--photo-delay",(-i*.7)+"s");button.setAttribute("aria-label","Enlarge photograph "+(i+1));
+  const button=document.createElement("button");button.type="button";button.className="photo-thumbnail";button.style.setProperty("--photo-delay",(-i*.7)+"s");button.style.setProperty("--photo-angle",(Math.random()*12-6)+"deg");button.setAttribute("aria-label","Enlarge photograph "+(i+1));
   const img=document.createElement("img");img.src=photo.url;img.alt=photo.alt||"Travel photograph";img.loading="lazy";img.decoding="async";
   button.append(img);button.addEventListener("click",()=>open(i));grid.append(button);
  });
+ function scatter(){
+  const width=grid.clientWidth,mobile=width<500,columns=mobile?2:3,cell=width/columns,rows=Math.ceil(photos.length/columns),rowHeight=mobile?205:255;
+  grid.style.height=(rows*rowHeight+30)+"px";
+  [...grid.children].forEach((button,i)=>{
+   const w=Math.min(cell-20,(mobile?125:170)+Math.random()*(mobile?35:80)),h=w*(.8+Math.random()*.45);
+   const x=(i%columns)*cell+Math.random()*Math.max(0,cell-w-12)+6,y=Math.floor(i/columns)*rowHeight+10+Math.random()*25;
+   button.style.width=w+"px";button.style.height=h+"px";button.style.left=x+"px";button.style.top=y+"px";
+  });
+ }
+ scatter();let resizeTimer;window.addEventListener("resize",()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(scatter,150);});
 })();
