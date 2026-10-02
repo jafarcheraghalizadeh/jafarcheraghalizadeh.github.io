@@ -46,9 +46,10 @@ function recordEnergy(value) {
 }
 function drawEnergy(latest) {
   const left=80,right=750,top=30,bottom=335,maxN=Math.max(20,latest.n);
-  const X=n=>left+n/maxN*(right-left),Y=e=>bottom-(e+2)/4*(bottom-top);
+  const energyMax=Math.max(.1, Math.ceil(Math.max(latest.value,...energyHistory.map(p=>p.value))*10)/10+.05);
+  const X=n=>left+n/maxN*(right-left),Y=e=>bottom-(e+2)/(energyMax+2)*(bottom-top);
   let marks='<rect width="800" height="410" fill="#fff"/>';
-  for(let e=-2;e<=2;e++){const yy=Y(e);marks+='<path d="M'+left+' '+yy+'H'+right+'" stroke="#e5ebe8"/><text x="'+(left-12)+'" y="'+(yy+5)+'" text-anchor="end">'+e+'</text>';}
+  for(let e=-2;e<=energyMax;e+=.5){const yy=Y(e);marks+='<path d="M'+left+' '+yy+'H'+right+'" stroke="#e5ebe8"/><text x="'+(left-12)+'" y="'+(yy+5)+'" text-anchor="end">'+e.toFixed(1)+'</text>';}
   for(let k=0;k<=4;k++){const n=Math.round(maxN*k/4),xx=X(n);marks+='<path d="M'+xx+' '+top+'V'+bottom+'" stroke="#e5ebe8"/><text x="'+xx+'" y="'+(bottom+24)+'" text-anchor="middle">'+n+'</text>';}
   marks+='<path d="M'+left+' '+top+'V'+bottom+'H'+right+'" fill="none" stroke="#53676a"/>';
   const points=energyHistory.slice();if(points[points.length-1]?.n!==latest.n)points.push(latest);
