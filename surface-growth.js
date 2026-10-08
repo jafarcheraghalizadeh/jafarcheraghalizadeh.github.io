@@ -79,15 +79,16 @@ function roughnessPlot() {
  get('roughness-fit').textContent=fit?`Hollow circles: measurements · Orange: W ≈ ${fit.A.toPrecision(3)} t^${fit.beta.toFixed(3)} · estimated β = ${fit.beta.toFixed(3)} · fit uses ${rows.length} positive measurements from t = ${rows[0].t} to ${rows[rows.length-1].t}.`:'Hollow circles: measurements · The power-law estimate appears after five positive measurements.';
 }
 function draw() {
- const low = Math.min(...heights), high = Math.max(...heights), cell=540/size;
+ const low = Math.min(...heights), high = Math.max(...heights), cell=540/(size-1);
  const ymax=Math.max(10,high*1.1), Y=h=>550-480*h/ymax;
  ctx.fillStyle='#f7f8fa';ctx.fillRect(0,0,640,640);
  ctx.font='16px system-ui';ctx.fillStyle='#53676a';
  for(let k=0;k<=4;k++) {
   const h=ymax*k/4,y=Y(h);ctx.strokeStyle='#dce4e2';ctx.beginPath();ctx.moveTo(65,y);ctx.lineTo(605,y);ctx.stroke();ctx.fillText(h.toFixed(1),8,y+5);
  }
- ctx.fillStyle='#236253';
- for(let i=0;i<size;i++)ctx.fillRect(65+i*cell,Y(heights[i]),Math.max(1,cell-1),550-Y(heights[i]));
+ ctx.strokeStyle='#236253';ctx.lineWidth=2;ctx.lineJoin='round';ctx.beginPath();
+ for(let i=0;i<size;i++){const x=65+i*cell,y=Y(heights[i]);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);}
+ ctx.stroke();ctx.lineWidth=1;
  ctx.strokeStyle='#192d30';ctx.beginPath();ctx.moveTo(65,70);ctx.lineTo(65,550);ctx.lineTo(605,550);ctx.stroke();
  ctx.fillStyle='#53676a';ctx.fillText('0',65,580);ctx.fillText(String(size-1),580,580);ctx.fillText('Site x',300,615);ctx.fillText('Height h(x)',65,40);
  const m=history[history.length-1];
