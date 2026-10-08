@@ -41,6 +41,43 @@ function plot(id, field, label) {
  if (!layers) svg += '<text x="420" y="150" text-anchor="middle">Run the simulation to collect measurements.</text>';
  get(id).innerHTML=svg;
 }
+function roughnessPlot() {
+ const rows=history.filter(p=>p.t>0&&p.width>0);
+ let fit=null;
+ if(rows.length>=5){
+  const xs=rows.map(p=>Math.log(p.t)),ys=rows.map(p=>Math.log(p.width));
+  const mx=xs.reduce((a,b)=>a+b,0)/xs.length,my=ys.reduce((a,b)=>a+b,0)/ys.length;
+  const variance=xs.reduce((a,x)=>a+(x-mx)**2,0);
+  const beta=xs.reduce((a,x,i)=>a+(x-mx)*(ys[i]-my),0)/variance;
+  const A=Math.exp(my-beta*mx);if(Number.isFinite(beta)&&Number.isFinite(A))fit={A,beta};
+ }
+ const estimate=t=>fit.A*t**fit.beta;
+ const values=rows.map(p=>p.width);
+ if(fit)values.push(estimate(rows[0].t),estimate(rows[rows.length-1].t));
+ const minY=values.length?Math.min(...values):.1,maxY=values.length?Math.max(...values):10;
+ let lo=Math.floor(Math.log10(minY)),hi=Math.ceil(Math.log10(maxY));if(hi<=lo)hi=lo+1;
+ const maxX=Math.max(10,10**Math.ceil(Math.log10(Math.max(1,layers))));
+ const X=t=>80+680*Math.log10(t)/Math.log10(maxX),Y=w=>290-260*(Math.log10(w)-lo)/(hi-lo);
+ let svg='<rect width="800" height="360" fill="white"/>';
+ for(let e=0;e<=Math.log10(maxX);e++)for(const m of [1,2,5]){
+  const t=m*10**e;if(t>maxX)continue;const x=X(t);
+  svg+=`<path d="M${x} 30V290" stroke="#e5ebe8"/><text x="${x}" y="315" text-anchor="middle">${t}</text>`;
+ }
+ for(let e=lo;e<=hi;e++){
+  const w=10**e,y=Y(w);svg+=`<path d="M80 ${y}H760" stroke="#e5ebe8"/><text x="68" y="${y+5}" text-anchor="end">${w.toPrecision(2)}</text>`;
+ }
+ svg+='<path d="M80 30V290H760" stroke="#53676a" fill="none"/>';
+ if(fit){
+  const t0=rows[0].t,t1=rows[rows.length-1].t;
+  const points=Array.from({length:80},(_,i)=>{const t=t0*(t1/t0)**(i/79);return X(t)+','+Y(estimate(t));});
+  svg+=`<polyline points="${points.join(' ')}" stroke="#ce7958" stroke-width="2.5" fill="none"/>`;
+ }
+ for(const p of rows)svg+=`<circle cx="${X(p.t)}" cy="${Y(p.width)}" r="3.5" fill="none" stroke="#236253" stroke-width="1.5"><title>t = ${p.t}; W = ${p.width.toPrecision(4)}</title></circle>`;
+ svg+='<text x="420" y="348" text-anchor="middle">Deposited layers t · log scale</text><text transform="translate(20,160) rotate(-90)" text-anchor="middle">Roughness W · log scale</text>';
+ if(!rows.length)svg+='<text x="420" y="150" text-anchor="middle">Run the simulation to collect positive roughness values.</text>';
+ get('width-plot').innerHTML=svg;
+ get('roughness-fit').textContent=fit?`Hollow circles: measurements · Orange: W ≈ ${fit.A.toPrecision(3)} t^${fit.beta.toFixed(3)} · estimated β = ${fit.beta.toFixed(3)} · fit uses ${rows.length} positive measurements from t = ${rows[0].t} to ${rows[rows.length-1].t}.`:'Hollow circles: measurements · The power-law estimate appears after five positive measurements.';
+}
 function draw() {
  const low = Math.min(...heights), high = Math.max(...heights), cell=540/size;
  const ymax=Math.max(10,high*1.1), Y=h=>550-480*h/ymax;
@@ -58,7 +95,7 @@ function draw() {
  get('growth-mean').textContent=m.mean.toFixed(3); get('growth-width').textContent=m.width.toFixed(3); get('growth-max').textContent=high;
  get('height-scale').textContent=`Height range: ${low}–${high} units · ${size} sites`;
  canvas.setAttribute('aria-label',`Surface height profile at ${layers} deposited layers. Height range ${low} to ${high}, roughness ${m.width.toFixed(3)}.`);
- plot('mean-plot','mean','Mean height ⟨h⟩'); plot('width-plot','width','Roughness W');
+ plot('mean-plot','mean','Mean height ⟨h⟩'); roughnessPlot();
 }
 function reset() { pause(); size=Number(get('growth-size').value); heights=new Float64Array(size); layers=events=0; history=[measure()]; draw(); }
 get('growth-toggle').addEventListener('click',()=>{if(running)pause();else if(layers<1000){running=true;get('growth-toggle').textContent='Pause';get('growth-status').textContent='Running';}});
