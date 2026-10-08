@@ -38,9 +38,41 @@ function thermodynamics(T){
  return {u:U/V,c:Math.max(0,E2-U*U)/(V*T*T),f:-T*logZ/V,s:(logZ+U/T)/V,
   m:covered?A/V:null,chi:covered?B/(V*T):null,binder:covered&&B>0?1-D/(3*B*B):null};
 }
+const observableSpecs=[
+ ['u','Energy per spin','E / N (J)'],['c','Heat capacity per spin','CV / N (kB)'],
+ ['f','Free energy per spin','F / N (J)'],['s','Entropy per spin','S / N (kB)'],
+ ['m','Mean absolute magnetization','⟨|M|⟩ / N'],['chi','Susceptibility per spin','χ (1 / J)'],
+ ['binder','Binder cumulant','U4']
+];
+function thermoPlots(T,current){
+ const selected=new Set(Array.from(root.querySelectorAll('#wl-choices input:checked'),el=>el.value));
+ const temperatures=Array.from({length:91},(_,i)=>0.5+i*0.05);
+ const curve=temperatures.map(t=>({t,...thermodynamics(t)}));
+ const container=root.querySelector('#wl-thermo-plots');
+ const available=root.clientWidth, width=available>700?(available-24)/2:available;
+ const w=Math.max(280,width),h=240,l=72,r=18,top=14,bottom=48;
+ const pw=w-l-r,ph=h-top-bottom,x=t=>l+(t-0.5)/4.5*pw;
+ container.innerHTML=observableSpecs.filter(([key])=>selected.has(key)).map(([key,label,unit])=>{
+  const values=curve.map(d=>d[key]);
+  if(values.some(v=>v===null))return `<div class="wl-thermo-panel"><h3>${label}</h3><p class="note">Awaiting magnetic measurements at all accessible energies.</p></div>`;
+  const lo=Math.min(...values),hi=Math.max(...values),pad=Math.max((hi-lo)*0.08,1e-6);
+  const min=lo-pad,max=hi+pad,y=v=>top+(max-v)/(max-min)*ph;
+  const fmt=v=>Math.abs(v)>=1000||Math.abs(v)>0&&Math.abs(v)<0.001?v.toExponential(1):Number(v.toPrecision(3)).toString();
+  let svg=`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${label} versus temperature"><title>${label} versus reduced temperature; selected value ${current[key].toFixed(4)}</title><rect x="${l}" y="${top}" width="${pw}" height="${ph}" fill="none" stroke="var(--line)"/>`;
+  for(let i=0;i<4;i++){
+   const v=min+(max-min)*i/3;
+   svg+=`<text x="${l-7}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text>`;
+  }
+  for(const t of [0.5,2,3.5,5])svg+=`<text x="${x(t)}" y="${top+ph+20}" text-anchor="${t===0.5?'start':t===5?'end':'middle'}">${t}</text>`;
+  const path=curve.map((d,i)=>`${i?'L':'M'}${x(d.t).toFixed(2)},${y(d[key]).toFixed(2)}`).join(' ');
+  svg+=`<path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2"/><path d="M${x(T)},${top}V${top+ph}" stroke="#b98b50" stroke-width="1" stroke-dasharray="4 3"/><circle cx="${x(T)}" cy="${y(current[key])}" r="4" fill="#b98b50"><title>T = ${T.toFixed(2)}, value = ${current[key].toFixed(4)}</title></circle><text x="${l+pw/2}" y="${h-5}" text-anchor="middle">Temperature kBT / J</text><text transform="translate(15,${top+ph/2}) rotate(-90)" text-anchor="middle">${unit}</text></svg>`;
+  return `<div class="wl-thermo-panel"><h3>${label}</h3>${svg}<p class="note">At T = ${T.toFixed(2)}: ${current[key].toFixed(4)}</p></div>`;
+ }).join('')||'<p class="note">Select an observable to display its temperature curve.</p>';
+}
 function observables(){
  const T=Number(root.querySelector('#wl-temp').value),o=thermodynamics(T);
  root.querySelector('#wl-temp-value').textContent=T.toFixed(2);
+ thermoPlots(T,o);
  const rows=[['Energy per spin',o.u,'J'],['Heat capacity per spin cV = CV / N',o.c,'kB'],['Free energy per spin',o.f,'J'],['Entropy per spin',o.s,'kB'],['Mean |M| / N',o.m,''],['Susceptibility per spin',o.chi,'1 / J'],['Binder cumulant',o.binder,'']];
  root.querySelector('#wl-observables').innerHTML='<table class="table table-sm"><thead><tr><th>Observable</th><th class="text-end">Value</th><th>Units</th></tr></thead><tbody>'+rows.map(([name,v,unit])=>`<tr><td>${name}</td><td class="text-end tabular-nums">${v===null?'Awaiting measurements':v.toFixed(4)}</td><td>${unit}</td></tr>`).join('')+'</tbody></table>';
  root.querySelector('#wl-measure').textContent=done?`Frozen-DOS measurements: ${samples.toLocaleString()} samples; ${bins.filter(k=>visits[k]>0).length}/${bins.length} energies covered. Correlated samples; no error bars.`:'Provisional estimates: density of states is still adapting. Magnetic measurements begin after convergence.';
@@ -114,7 +146,8 @@ function loop(timestamp){
 root.querySelector('#wl-run').onclick=()=>{running=!running;draw();};
 root.querySelector('#wl-step').onclick=()=>{if(done)production(1000);else advance(1000);draw();};
 root.querySelector('#wl-temp').oninput=observables;
+root.querySelectorAll('#wl-choices input').forEach(input=>input.onchange=observables);
 
-new ResizeObserver(()=>draw()).observe(root.querySelector('#wl-spins'));
+new ResizeObserver(()=>draw()).observe(root);
 draw();requestAnimationFrame(loop);
 })();
